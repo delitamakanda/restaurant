@@ -56,7 +56,7 @@ class Restaurant(models.Model):
     phone_number = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='categories')
-    zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='restaurants')
+    zone = models.ManyToManyField(Zone, related_name='restaurants')
 
     def __str__(self):
         return self.name
@@ -136,10 +136,11 @@ class Order(models.Model):
 
 class Deliverer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', blank=True, null=True)
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20)
-    zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='deliverer')
+    zone = models.ManyToManyField(Zone, related_name='deliverer')
 
     class Meta:
         ordering = ['name']
