@@ -1,5 +1,5 @@
 asgiref==3.6.0
-Django==4.2
+Django==4.2.1
 django-multiselectfield==0.1.12
 exceptiongroup==1.1.1
 iniconfig==2.0.0
