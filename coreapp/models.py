@@ -50,6 +50,7 @@ class Restaurant(models.Model):
     location = models.CharField(max_length=255)
     latitude = models.CharField(max_length=100)
     longitude = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='restaurants/%Y/%m/%d', default='restaurants/default.png')
     opening_days = MultiSelectField(choices=WEEK_DAYS, max_length=2)
     opening_hours = models.DateTimeField(blank=True, null=True)
     closing_hours = models.DateTimeField(blank=True, null=True)
