@@ -149,3 +149,28 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+import logging
+import logging.config
+import sys
+import structlog
+from pythonjsonlogger import jsonlogger
+
+logger = logging.getLogger()
+
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter()
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
+
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+
+structlog.configure(
+    processors=[
+        structlog.processors.add_log_level,
+        structlog.processors.format_exc_info,
+        structlog.processors.TimeStamper(fmt='%Y-%m-%d %H:%M:%S', utc=True),
+        structlog.dev.ConsoleRenderer(),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+    cache_logger_on_first_use=True,
+)
