@@ -182,7 +182,8 @@ structlog.configure(
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 from datetime import timedelta
@@ -193,4 +194,12 @@ SIMPLE_JWT = {
     'SIGNING_KEY': os.getenv('SIMPLE_JWT_SIGNING_KEY', default=None) or SECRET_KEY,
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Restaurant API',
+    'DESCRIPTION': 'API documentation for Restaurant app',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': False
 }
