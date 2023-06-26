@@ -9,6 +9,23 @@ class User(AbstractUser):
     is_guest = models.BooleanField(default=True)
 
 
+class Address(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    client = models.ForeignKey(User, on_delete=models.CASCADE)
+    state = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    zip_code = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name = 'Address'
+        verbose_name_plural = 'Addresses'
+
+
 class Zone(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -134,6 +151,22 @@ class Order(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
+
+class OrderItem(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'
+        ordering = ('name',)
 
 class Deliverer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

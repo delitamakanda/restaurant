@@ -9,6 +9,8 @@ from coreapp.models import (
     Order,
     Deliverer,
     Delivery,
+    OrderItem,
+    Address,
 )
 
 admin.site.register(User)
@@ -20,3 +22,5 @@ admin.site.register(Meal)
 admin.site.register(Order)
 admin.site.register(Deliverer)
 admin.site.register(Delivery)
+admin.site.register(Address)
+admin.site.register(OrderItem)

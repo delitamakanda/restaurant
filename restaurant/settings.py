@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.humanize',
     'multiselectfield',
-
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
     'coreapp.apps.CoreappConfig',
 ]
 
@@ -175,3 +177,20 @@ structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
     cache_logger_on_first_use=True,
 )
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'SIGNING_KEY': os.getenv('SIMPLE_JWT_SIGNING_KEY', default=None) or SECRET_KEY,
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
+}
