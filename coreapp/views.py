@@ -1,3 +1,4 @@
+import csv
 from django.shortcuts import render
 from django.http import HttpResponse
 from coreapp.models import Zone, Category, User, Restaurant, Meal, Order, Deliverer, Delivery
@@ -8,6 +9,25 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def restaurants_csv(request):
+    restaurants = Restaurant.objects.all()
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="restaurants.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['id', 'name', 'address', 'phone', 'email', 'zone', 'category'])
+    for restaurant in restaurants:
+        writer.writerow([
+            restaurant.id,
+            restaurant.name,
+            restaurant.address,
+            restaurant.phone,
+            restaurant.email,
+            restaurant.zone.name,
+            restaurant.category.name
+        ])
+    return response
 
 def hello_world_view(request):
     return HttpResponse(f'Hello world')
