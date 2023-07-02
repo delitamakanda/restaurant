@@ -7,10 +7,11 @@ from coreapp.models import (
     Restaurant,
     Meal,
     Order,
+    OrderItem,
     Deliverer,
     Delivery,
-    OrderItem,
     Address,
+    WebhookMessage,
 )
 
 admin.site.register(User)
@@ -24,3 +25,4 @@ admin.site.register(Deliverer)
 admin.site.register(Delivery)
 admin.site.register(Address)
 admin.site.register(OrderItem)
+admin.site.register(WebhookMessage)

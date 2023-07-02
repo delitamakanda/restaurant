@@ -28,3 +28,6 @@ jobs:
       - name: Test with Pytest
         working-directory: .
         run: pytest -vv
+        
+      - name: Django Test
+        run: python manage.py test

@@ -1,7 +1,15 @@
 import csv
+import json
+import datetime
+from secrets import compare_digest
+from django.conf import settings
+from django.db.transaction import atomic, non_atomic_requests
 from django.shortcuts import render
-from django.http import HttpResponse
-from coreapp.models import Zone, Category, User, Restaurant, Meal, Order, Deliverer, Delivery
+from django.http import HttpResponse, HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from coreapp.models import Zone, Category, User, Restaurant, Meal, Order, Deliverer, Delivery, WebhookMessage
 from coreapp.serializers import ZoneSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -9,6 +17,32 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
+
+
+@csrf_exempt
+@require_POST
+def webhook(request):
+    given_token = request.headers.get('Webhook-Token', '')
+    if not compare_digest(given_token, settings.WEBHOOK_TOKEN):
+        return HttpResponseForbidden(
+            'Invalid webhook token',
+            content_type='text/plain'
+        )
+    WebhookMessage.objects.filter(
+        received_at__lte=timezone.now() - datetime.timedelta(days=7)
+    ).delete()
+    payload = json.loads(request.body.decode('utf-8'))
+    WebhookMessage.objects.create(
+        payload=payload,
+        received_at=timezone.now()
+    )
+    process_webhook_payload(payload)
+    return HttpResponse("Message received", content_type="text/plain")
+
+@atomic
+def process_webhook_payload(payload):
+    # todo: implement business logic here
+    pass
 
 
 def restaurants_csv(request):

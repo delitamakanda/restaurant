@@ -203,3 +203,6 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': False
 }
+
+# webhook settings
+WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN', default="1234567890")

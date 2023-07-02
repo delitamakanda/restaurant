@@ -201,3 +201,13 @@ class Delivery(models.Model):
         verbose_name = 'Delivery'
         verbose_name_plural = 'Deliveries'
 
+
+
+class WebhookMessage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    received_at = models.DateTimeField(auto_now_add=True)
+    payload = models.JSONField(default=None, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-received_at']
+        indexes = [models.Index(fields=['received_at'])]
