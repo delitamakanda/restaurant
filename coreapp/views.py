@@ -4,18 +4,37 @@ import datetime
 from secrets import compare_digest
 from django.conf import settings
 from django.db.transaction import atomic, non_atomic_requests
-from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from coreapp.models import  Category, User, Restaurant, Menu, Order, WebhookMessage
-from rest_framework.permissions import IsAuthenticated
+from coreapp.models import Category, User, Restaurant, Menu, Order, WebhookMessage
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from coreapp.serializers import RestaurantSerializer, CategorySerializer
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny,]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    http_method_names = ['get',]
+
+
+class RestaurantViewSet(ModelViewSet):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantSerializer
+    permission_classes = [AllowAny,]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    http_method_names = ['get',]
 
 
 @csrf_exempt

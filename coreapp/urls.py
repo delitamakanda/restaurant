@@ -1,4 +1,11 @@
-from .views import hello_world_view, APILogoutView, restaurants_csv, webhook
+from .views import (
+    hello_world_view,
+    RestaurantViewSet,
+    CategoryViewSet,
+    APILogoutView,
+    restaurants_csv,
+    webhook
+)
 from django.urls import path
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
@@ -7,7 +14,8 @@ from rest_framework_simplejwt.views import (
 )
 
 router = routers.DefaultRouter()
-# router.register(r'api/zones-lists', ZoneListView, basename='zones-lists')
+router.register(r'api/restaurants-list', RestaurantViewSet, basename='restaurants-list')
+router.register(r'api/categories-list', CategoryViewSet, basename='categories-list')
 
 urlpatterns = [
     path('hello', hello_world_view, name='hello'),
