@@ -9,8 +9,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from coreapp.models import Zone, Category, User, Restaurant, Meal, Order, Deliverer, Delivery, WebhookMessage
-from coreapp.serializers import ZoneSerializer
+from coreapp.models import  Category, User, Restaurant, Menu, Order, WebhookMessage
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -39,6 +38,7 @@ def webhook(request):
     process_webhook_payload(payload)
     return HttpResponse("Message received", content_type="text/plain")
 
+
 @atomic
 def process_webhook_payload(payload):
     # todo: implement business logic here
@@ -50,7 +50,7 @@ def restaurants_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="restaurants.csv"'
     writer = csv.writer(response)
-    writer.writerow(['id', 'name', 'address', 'phone', 'email', 'zone', 'category'])
+    writer.writerow(['id', 'name', 'address', 'phone', 'email', 'category'])
     for restaurant in restaurants:
         writer.writerow([
             restaurant.id,
@@ -58,23 +58,14 @@ def restaurants_csv(request):
             restaurant.address,
             restaurant.phone,
             restaurant.email,
-            restaurant.zone.name,
             restaurant.category.name
         ])
     return response
 
+
 def hello_world_view(request):
     return HttpResponse(f'Hello world')
 
-class ZoneListView(ModelViewSet):
-    serializer_class = ZoneSerializer
-    permission_classes = [IsAuthenticated,]
-
-    def get_queryset(self):
-        return Zone.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save()
 
 class APILogoutView(APIView):
     permission_classes = (IsAuthenticated,)

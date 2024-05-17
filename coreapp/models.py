@@ -1,47 +1,47 @@
 import uuid
 from django.db import models
+from django.db.models import Manager, QuerySet, Q
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from multiselectfield import MultiSelectField
+
+
+class AppQuerySet(QuerySet):
+    def delete(self):
+        self.update(is_deleted=True)
+
+
+class AppManager(Manager):
+    def get_queryset(self):
+        return AppQuerySet(self.model, using=self._db).exclude(is_deleted=True)
+
+
+class TimeBasedStampModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 
 class User(AbstractUser):
     is_restaurant = models.BooleanField(default=False)
-    is_deliverer = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=True)
 
-
-class Address(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255)
-    client = models.ForeignKey(User, on_delete=models.CASCADE)
-    state = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    zip_code = models.CharField(max_length=10)
+    class Meta:
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+        ordering = ['username']
 
     def __str__(self):
-        return self.title
-
-    class Meta:
-        ordering = ('title',)
-        verbose_name = 'Address'
-        verbose_name_plural = 'Addresses'
-
-
-class Zone(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Zone'
-        verbose_name_plural = 'Zones'
+        return self.username
 
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    position = models.PositiveIntegerField(default=1)
+    image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -52,74 +52,129 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
-class Restaurant(models.Model):
-    WEEK_DAYS = (
-        ('MO', 'Monday'),
-        ('TU', 'Tuesday'),
-        ('WE', 'Wednesday'),
-        ('TH', 'Thursday'),
-        ('FR', 'Friday'),
-        ('SA', 'Saturday'),
-        ('SU', 'Sunday'),
-    )
+class Address(TimeBasedStampModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    additional_info = models.CharField(max_length=255, blank=True, null=True)
+    country = models.CharField(max_length=255)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_addresses')
+    digicode = models.CharField(max_length=255, blank=True, null=True)
+    google_place_id = models.CharField(max_length=255, default="")
+    icon_id = models.CharField(max_length=255, blank=True, null=True)
+    lat = models.IntegerField(default=0.0)
+    lng = models.IntegerField(default=0.0)
+    locality = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    postal_code = models.CharField(max_length=255, blank=True, null=True)
+    street_address = models.CharField(max_length=255, blank=True, null=True)
+    timezone = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Address'
+        verbose_name_plural = 'Addresses'
+
+
+ALLOWED_DAYS = (
+    ('MON', 'Monday'),
+    ('TUE', 'Tuesday'),
+    ('WED', 'Wednesday'),
+    ('THU', 'Thursday'),
+    ('FRI', 'Friday'),
+    ('SAT', 'Saturday'),
+    ('SUN', 'Sunday'),
+)
+
+
+class Schedule(TimeBasedStampModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    day = models.CharField(max_length=3, choices=ALLOWED_DAYS, default='MON')
+    is_enabled = models.BooleanField(default=True)
+    begin_hour = models.TimeField()
+    end_hour = models.TimeField()
+
+
+class Restaurant(TimeBasedStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    location = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    latitude = models.CharField(max_length=100)
-    longitude = models.CharField(max_length=100)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    logo = models.ImageField(upload_to='restaurants/%Y/%m/%d', default='restaurants/default.png')
-    opening_days = MultiSelectField(choices=WEEK_DAYS, max_length=2)
-    opening_hours = models.DateTimeField(blank=True, null=True)
-    closing_hours = models.DateTimeField(blank=True, null=True)
-    phone_number = models.CharField(max_length=100, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+    tags = models.CharField(max_length=255)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='restaurants_schedule')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='categories')
-    zone = models.ManyToManyField(Zone, related_name='restaurants')
+    menus = models.ManyToManyField('Menu', related_name='restaurants_menus')
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
     class Meta:
+        abstract = False
         ordering = ['name']
         verbose_name = 'Restaurant'
         verbose_name_plural = 'Restaurants'
 
+    objects = AppManager()
+
+
 class Meal(models.Model):
-    OPTIONS_MEAL = (
-        ('HA', 'Halal'),
-        ('CA', 'Casher'),
-        ('VE', 'Vegetarian'),
-        ('VA', 'Vegan'),
-    )
-    CATEGORY_MEAL = (
-        ('EN', 'Entrees'),
-        ('ME', 'Meals'),
-        ('AC', 'Accompaniements'),
-        ('TO', 'Toppings'),
-        ('FO', 'Formula'),
-        ('DE', 'Desserts'),
-        ('DR', 'Drinks'),
-    )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ImageField(upload_to='meals/%Y/%m/%d', blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='meals')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    options = MultiSelectField(choices=OPTIONS_MEAL, max_length=2)
-    category = models.CharField(max_length=2, choices=CATEGORY_MEAL, default='ME')
-
-    def __str__(self):
-        return self.name
+    order = models.PositiveIntegerField(default=1)
+    products = models.ManyToManyField('Product', related_name='meals_products')
 
     class Meta:
         ordering = ['name']
         verbose_name = 'Meal'
         verbose_name_plural = 'Meals'
+
+    def __str__(self):
+        return self.name
+
+
+class Supplement(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Supplement'
+        verbose_name_plural = 'Supplements'
+
+
+class Product(TimeBasedStampModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image_url = models.URLField(blank=True, null=True)
+    description = models.TextField()
+    supplements = models.ForeignKey('Supplement', on_delete=models.CASCADE, related_name='products_supply')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
+
+
+class Menu(TimeBasedStampModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    meals = models.ManyToManyField('Meal', related_name='menus_meals')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Menu'
+        verbose_name_plural = 'Menus'
+
 
 class Order(models.Model):
     ORDER_STATUS = (
@@ -132,7 +187,6 @@ class Order(models.Model):
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='restaurant')
-    meals = models.ManyToManyField(Meal, related_name='meals')
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(choices=ORDER_STATUS, max_length=1, default=2)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -154,6 +208,7 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
 
+
 class OrderItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -169,38 +224,6 @@ class OrderItem(models.Model):
         verbose_name = 'Order Item'
         verbose_name_plural = 'Order Items'
         ordering = ('name',)
-
-class Deliverer(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', blank=True, null=True)
-    name = models.CharField(max_length=100)
-    location = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20)
-    zone = models.ManyToManyField(Zone, related_name='deliverer')
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Deliverer'
-        verbose_name_plural = 'Deliverers'
-    
-    def __str__(self):
-        return self.name
-
-class Delivery(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order')
-    deliverer = models.ForeignKey(Deliverer, on_delete=models.CASCADE, related_name='deliverer')
-    delivered_at = models.DateTimeField(blank=True, null=True)
-    location = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.id
-
-    class Meta:
-        ordering = ['-delivered_at']
-        verbose_name = 'Delivery'
-        verbose_name_plural = 'Deliveries'
-
 
 
 class WebhookMessage(models.Model):
