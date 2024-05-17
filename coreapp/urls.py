@@ -2,6 +2,8 @@ from .views import (
     hello_world_view,
     RestaurantViewSet,
     CategoryViewSet,
+    ProductViewSet,
+    MealViewSet,
     APILogoutView,
     restaurants_csv,
     webhook
@@ -16,6 +18,8 @@ from rest_framework_simplejwt.views import (
 router = routers.DefaultRouter()
 router.register(r'api/restaurants-list', RestaurantViewSet, basename='restaurants-list')
 router.register(r'api/categories-list', CategoryViewSet, basename='categories-list')
+router.register(r'api/products-list', ProductViewSet, basename='products-list')
+router.register(r'api/meals-list', MealViewSet, basename='meals-list')
 
 urlpatterns = [
     path('hello', hello_world_view, name='hello'),

@@ -92,6 +92,14 @@ class Schedule(TimeBasedStampModel):
     begin_hour = models.TimeField()
     end_hour = models.TimeField()
 
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Schedule'
+        verbose_name_plural = 'Schedules'
+
+    def __str__(self):
+        return f'{self.day} {self.begin_hour} - {self.end_hour}'
+
 
 class Restaurant(TimeBasedStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
