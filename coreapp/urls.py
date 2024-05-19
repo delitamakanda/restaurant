@@ -6,6 +6,8 @@ from .views import (
     MealViewSet,
     APILogoutView,
     restaurants_csv,
+    UserViewSet,
+    MenuViewSet,
     webhook
 )
 from django.urls import path
@@ -20,6 +22,8 @@ router.register(r'api/restaurants-list', RestaurantViewSet, basename='restaurant
 router.register(r'api/categories-list', CategoryViewSet, basename='categories-list')
 router.register(r'api/products-list', ProductViewSet, basename='products-list')
 router.register(r'api/meals-list', MealViewSet, basename='meals-list')
+router.register(r'api/users-list', UserViewSet, basename='users-list')
+router.register(r'api/menus-list', MenuViewSet, basename='menus-list')
 
 urlpatterns = [
     path('hello', hello_world_view, name='hello'),

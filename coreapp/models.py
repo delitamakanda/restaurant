@@ -25,8 +25,8 @@ class TimeBasedStampModel(models.Model):
 
 
 class User(AbstractUser):
-    is_restaurant = models.BooleanField(default=False)
-    is_guest = models.BooleanField(default=True)
+    contact_number = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(max_length=255, blank=True)
 
     class Meta:
         verbose_name = 'user'
@@ -35,6 +35,20 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Tags(TimeBasedStampModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant_tags')
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+        ordering = ['-name']
+
+    def __str__(self):
+        return f'{self.name} - ({self.restaurant})'
 
 
 class Category(models.Model):
@@ -58,10 +72,10 @@ class Address(TimeBasedStampModel):
     country = models.CharField(max_length=255)
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_addresses')
     digicode = models.CharField(max_length=255, blank=True, null=True)
-    google_place_id = models.CharField(max_length=255, default="")
+    google_place_id = models.CharField(max_length=255, blank=True, null=True)
     icon_id = models.CharField(max_length=255, blank=True, null=True)
-    lat = models.IntegerField(default=0.0)
-    lng = models.IntegerField(default=0.0)
+    lat = models.CharField(max_length=100, default=0.0)
+    lng = models.CharField(max_length=100, default=0.0)
     locality = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=255, blank=True, null=True)
     postal_code = models.CharField(max_length=255, blank=True, null=True)
@@ -72,6 +86,9 @@ class Address(TimeBasedStampModel):
         ordering = ['-created_at']
         verbose_name = 'Address'
         verbose_name_plural = 'Addresses'
+
+    def __str__(self):
+        return f'{self.street_address}, {self.locality}, {self.postal_code}'
 
 
 ALLOWED_DAYS = (
@@ -93,7 +110,7 @@ class Schedule(TimeBasedStampModel):
     end_hour = models.TimeField()
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['id']
         verbose_name = 'Schedule'
         verbose_name_plural = 'Schedules'
 
@@ -105,11 +122,12 @@ class Restaurant(TimeBasedStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     image_url = models.URLField(blank=True, null=True)
-    tags = models.CharField(max_length=255)
-    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='restaurants_schedule')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='categories')
+    schedule = models.ManyToManyField(Schedule, related_name='restaurants_schedule')
+    category = models.ManyToManyField(Category, related_name='categories')
     menus = models.ManyToManyField('Menu', related_name='restaurants_menus')
     is_deleted = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='restaurants_user')
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='restaurants_address')
 
     def __str__(self):
         return self.name
@@ -157,8 +175,8 @@ class Product(TimeBasedStampModel):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(blank=True, null=True)
-    description = models.TextField()
-    supplements = models.ForeignKey('Supplement', on_delete=models.CASCADE, related_name='products_supply')
+    description = models.TextField(blank=True, null=True)
+    supplements = models.ForeignKey('Supplement', on_delete=models.CASCADE, related_name='products_supply', blank=True, null=True)
 
     def __str__(self):
         return self.name

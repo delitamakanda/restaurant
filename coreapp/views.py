@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from coreapp.models import Category, User, Restaurant, Menu, Order, WebhookMessage, Meal, Product
+from coreapp.models import Category, User, Restaurant, Menu, WebhookMessage, Meal, Product
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -16,7 +16,26 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from coreapp.serializers import RestaurantSerializer, CategorySerializer, MealSerializer, ProductSerializer
+from coreapp.serializers import (RestaurantSerializer, CategorySerializer, MenuSerializer,
+                                 MealSerializer, ProductSerializer, UserSerializer)
+
+
+class MenuViewSet(ModelViewSet):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+    permission_classes = [AllowAny,]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    http_method_names = ['get',]
+
+
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny,]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    http_method_names = ['get',]
 
 
 class MealViewSet(ModelViewSet):
