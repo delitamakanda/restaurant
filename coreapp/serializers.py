@@ -1,10 +1,19 @@
+from django.db import IntegrityError
 from rest_framework import serializers, response
 
 from coreapp.models import (Category, User, Restaurant, Meal, Order, OrderItem, Menu,
                             Product, Supplement, Address, Schedule, Tags)
 
 
-class TagsSerializer(serializers.ModelSerializer):
+class TemplateSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        try:
+            return self.Meta.model.objects.create(**validated_data)
+        except IntegrityError as e:
+            raise serializers.ValidationError(str(e))
+
+
+class TagsSerializer(TemplateSerializer):
     class Meta:
         model = Tags
         fields = '__all__'
