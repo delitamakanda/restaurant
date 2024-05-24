@@ -20,56 +20,41 @@ from coreapp.serializers import (RestaurantSerializer, CategorySerializer, MenuS
                                  MealSerializer, ProductSerializer, UserSerializer)
 
 
-class MenuViewSet(ModelViewSet):
+class TemplateViewSet(ModelViewSet):
+    permission_classes = [AllowAny, ]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    http_method_names = ['get', ]
+
+
+class MenuViewSet(TemplateViewSet):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    http_method_names = ['get',]
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(TemplateViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    http_method_names = ['get',]
 
 
-class MealViewSet(ModelViewSet):
+class MealViewSet(TemplateViewSet):
     queryset = Meal.objects.all()
     serializer_class = MealSerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(TemplateViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
 
 
-class CategoryViewSet(ModelViewSet):
+class CategoryViewSet(TemplateViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    http_method_names = ['get',]
 
 
-class RestaurantViewSet(ModelViewSet):
+class RestaurantViewSet(TemplateViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
-    permission_classes = [AllowAny,]
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    http_method_names = ['get',]
 
 
 @csrf_exempt
