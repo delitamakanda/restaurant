@@ -15,8 +15,11 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Build Docker image
-      uses: actions/docker/cli@master
+      uses: dacbd/gcr-build-push@main
       with:
+        tags: latest
+        project-id: ${{ secrets.GCLOUD_PROJECT }}
+        GCR-key: ${{ secrets.GCLOUD_AUTH }}
         args: "build . --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}"
 
     - name: Authenticate into Google Cloud Platform
