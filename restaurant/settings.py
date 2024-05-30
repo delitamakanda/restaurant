@@ -11,24 +11,45 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+import io
+
+import environ
+from google.cloud import  secretmanager
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+env_file = os.path.join(BASE_DIR, '.env')
+
+if os.path.exists(env_file):
+    env.read_env(env_file)
+elif os.environ.get('GOOGLE_CLOUD_PROJECT', None):
+    project_id = os.environ.get('GOOGLE_CLOUD_PROJECT')
+    settings_name = os.environ.get('SETTINGS_NAME', "settings")
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name).payload.data.decode('UTF-8')
+    env.read_env(io.StringIO(payload))
+else:
+    raise Exception("No.env file found")
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yobz3k7-a(c8jb3l8(yn$=7ctwju&@rmlh5$fr#926$okxz(kr'
+SECRET_KEY = environ.Env(SECRET_KEY=(str, ''))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environ.Env(DEBUG=(bool, False))
 
-if os.environ.get('DJANGO_ENV') == 'production':
-    DEBUG = False
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [environ.Env(ALLOWED_HOSTS=(str, '*'))]
 
 
 # Application definition
@@ -87,13 +108,14 @@ WSGI_APPLICATION = 'restaurant.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+default_sqlite_db = "sqlite:///" + str(BASE_DIR / 'db.sqlite3')
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db("DATABASE_URL", default=default_sqlite_db),
 }
+
+if os.getenv('USE_CLOUD_SQL_AUTH_PROXY', None):
+    DATABASES['default']['HOST'] = '127.0.0.1'
+    DATABASES['default']['PORT'] = '5432'
 
 
 # Password validation
@@ -208,3 +230,15 @@ SPECTACULAR_SETTINGS = {
 
 # webhook settings
 WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN', default="1234567890")
+
+# STORAGES
+
+GS_BUCKET_NAME = env('STORAGE_BUCKET_NAME', default=None)
+
+if GS_BUCKET_NAME:
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_DEFAULT_ACL = 'publicRead'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_DIRS = []
