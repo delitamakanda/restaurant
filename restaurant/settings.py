@@ -21,7 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool, False)
+    DEBUG=(bool, False),
+    SECRET_KEY=(str, ''),
+    ALLOWED_HOSTS=(list, []),
+    WEBHOOK_TOKEN=(str, ''),
+    GOOGLE_CLOUD_PROJECT=(str, ''),
+    SETTINGS_NAME=(str,'settings'),
 )
 
 env_file = os.path.join(BASE_DIR, '.env.example')
@@ -44,12 +49,12 @@ else:
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = environ.Env(SECRET_KEY=(str, ''))
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = environ.Env(DEBUG=(bool, False))
+DEBUG = os.environ.get('DEBUG', False)
 
-ALLOWED_HOSTS = [environ.Env(ALLOWED_HOSTS=(str, '*'))]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
