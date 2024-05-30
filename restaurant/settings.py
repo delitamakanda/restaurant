@@ -24,7 +24,7 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-env_file = os.path.join(BASE_DIR, '.env')
+env_file = os.path.join(BASE_DIR, '.env.example')
 
 if os.path.exists(env_file):
     env.read_env(env_file)
