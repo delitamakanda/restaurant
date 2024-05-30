@@ -119,4 +119,3 @@ class APILogoutView(APIView):
         token = RefreshToken(token=refresh_token)
         token.blacklist()
         return Response({"status": 204})
-

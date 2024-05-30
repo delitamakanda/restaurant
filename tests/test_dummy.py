@@ -1,9 +1,11 @@
 import pytest
 from django.urls import reverse
 
+
 def test_dummy():
     """dummy test"""
     assert True
+
 
 @pytest.mark.django_db
 def test_hello_view(client):
