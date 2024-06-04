@@ -1,8 +1,20 @@
 from django.db import IntegrityError
 from rest_framework import serializers
 
-from coreapp.models import (Category, User, Restaurant, Meal, Order, OrderItem, Menu,
-                            Product, Supplement, Address, Schedule, Tags)
+from coreapp.models import (
+    Category,
+    User,
+    Restaurant,
+    Meal,
+    Order,
+    OrderItem,
+    Menu,
+    Product,
+    Supplement,
+    Address,
+    Schedule,
+    Tags,
+)
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -44,7 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
-        read_only_fields = ('id',)
+        read_only_fields = ("id",)
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -58,9 +70,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "contact_email",
-                  "contact_number", "first_name", "last_name", "is_active", "is_staff",
-                  "restaurant",)
+        fields = (
+            "id",
+            "username",
+            "email",
+            "contact_email",
+            "contact_number",
+            "first_name",
+            "last_name",
+            "is_active",
+            "is_staff",
+            "restaurant",
+        )
 
     @staticmethod
     def get_restaurant(obj):
@@ -71,7 +92,12 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("id", "name", "position", "image_url",)
+        fields = (
+            "id",
+            "name",
+            "position",
+            "image_url",
+        )
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
@@ -82,8 +108,18 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ("id", "name", "image_url", "category", "address", "tags",
-                  "schedule", "menus", "is_deleted", "user")
+        fields = (
+            "id",
+            "name",
+            "image_url",
+            "category",
+            "address",
+            "tags",
+            "schedule",
+            "menus",
+            "is_deleted",
+            "user",
+        )
         read_only_fields = ("id",)
 
     @staticmethod
