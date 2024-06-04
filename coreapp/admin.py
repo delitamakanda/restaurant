@@ -1,20 +1,20 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin, Group
+from django.contrib.auth.admin import Group, UserAdmin
 
 from coreapp.models import (
-    User,
+    Address,
     Category,
-    Restaurant,
+    Meal,
     Menu,
     Order,
     OrderItem,
-    WebhookMessage,
-    Meal,
-    Supplement,
     Product,
-    Address,
+    Restaurant,
     Schedule,
+    Supplement,
     Tags,
+    User,
+    WebhookMessage,
 )
 
 
