@@ -3,6 +3,7 @@ import time
 
 from django.db import connection, reset_queries
 
+
 def metric_middleware(get_response):
     def middleware(request):
         reset_queries()
@@ -31,5 +32,5 @@ def metric_middleware(get_response):
         )
 
         return response
-    
+
     return middleware
