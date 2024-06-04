@@ -3,8 +3,8 @@
 **Table of Contents**
 
 - [Introduction](#introduction)
-- [Restaurant](#restaurant-application)
-- [Logging](#logging)
+- [Restaurant application](#restaurant-application)
+- [logging](#logging)
 - [Links](#links)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
