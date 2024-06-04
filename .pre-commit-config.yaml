@@ -40,3 +40,5 @@ repos:
           - "4"
           - "--title"
           - "**Table of Contents**"
+          - "--stdout"
+          - "--update-only"
