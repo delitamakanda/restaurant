@@ -13,4 +13,4 @@ def test_hello_view(client):
     url = reverse("hello")
     response = client.get(url)
     assert response.status_code == 200
-    assert response.content == b'Hello world'
+    assert response.content == b"Hello world"
