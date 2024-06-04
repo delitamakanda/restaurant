@@ -1,15 +1,11 @@
+# Django application on Google Cloud Platform.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
-
-- [Introduction](#introduction)
-- [Restaurant application](#restaurant-application)
-- [logging](#logging)
-- [Links](#links)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Introduction
+## Introduction
 
 django microservices python 3.9
 
