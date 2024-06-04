@@ -231,10 +231,10 @@ WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN', default="1234567890")
 # STORAGES
 
 GS_BUCKET_NAME = env('STORAGE_BUCKET_NAME', default=None)
-if env('DEBUG'):
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.path.join(BASE_DIR, 'credentials.json')
-    )
+# if env('DEBUG'):
+    # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        # os.path.join(BASE_DIR, 'credentials.json')
+    # )
 
 if not env('DEBUG'):
     DEFAULT_FILE_STORAGE = 'restaurant.storage_backends.GoogleCloudMediaStorage'
