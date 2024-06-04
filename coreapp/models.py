@@ -2,8 +2,8 @@ import uuid
 from django.db import models
 from django.db.models import Manager, QuerySet, Q
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
-from multiselectfield import MultiSelectField
+# from django.utils import timezone
+# from multiselectfield import MultiSelectField
 
 
 class AppQuerySet(QuerySet):

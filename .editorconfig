@@ -1,0 +1,6 @@
+root = true
+
+[*]
+ij_visual_guides = 40,60
+insert_final_newline = true
+trim_trailing_whitespace = true
