@@ -3,11 +3,15 @@
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Restaurant](#restaurant-application)
+- [Logging](#logging)
 - [Links](#links)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Introduction
+
+django microservices python 3.9
 
 ## Restaurant application
 
