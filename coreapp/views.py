@@ -3,7 +3,7 @@ import json
 import datetime
 from secrets import compare_digest
 from django.conf import settings
-from django.db.transaction import atomic, non_atomic_requests
+from django.db.transaction import atomic
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -103,7 +103,7 @@ def restaurants_csv(request):
 
 
 def hello_world_view(request):
-    return HttpResponse(f'Hello world')
+    return HttpResponse('Hello world')
 
 
 class APILogoutView(APIView):

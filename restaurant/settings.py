@@ -9,13 +9,19 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
-from pathlib import Path
 import io
+import logging
+import logging.config
+import os
+import sys
+from pathlib import Path
 
 import environ
+import structlog
 from google.cloud import secretmanager
-from google.oauth2 import service_account
+from pythonjsonlogger import jsonlogger
+
+# from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -174,12 +180,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-import logging
-import logging.config
-import sys
-import structlog
-from pythonjsonlogger import jsonlogger
-
 logger = logging.getLogger()
 
 logHandler = logging.StreamHandler()
@@ -232,9 +232,9 @@ WEBHOOK_TOKEN = os.getenv('WEBHOOK_TOKEN', default="1234567890")
 
 GS_BUCKET_NAME = env('STORAGE_BUCKET_NAME', default=None)
 # if env('DEBUG'):
-    # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        # os.path.join(BASE_DIR, 'credentials.json')
-    # )
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+# os.path.join(BASE_DIR, 'credentials.json')
+# )
 
 if not env('DEBUG'):
     DEFAULT_FILE_STORAGE = 'restaurant.storage_backends.GoogleCloudMediaStorage'
@@ -246,3 +246,9 @@ if not env('DEBUG'):
     GS_STATIC_BUCKET_NAME = 'static'
     STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_STATIC_BUCKET_NAME)
     MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
+
+if not env('DEBUG'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

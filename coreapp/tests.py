@@ -38,4 +38,4 @@ class WebhookTestCase(TestCase):
         assert WebhookMessage.objects.filter(id=old_message.id).exists()
         wm = WebhookMessage.objects.filter(id=old_message.id).first()
         assert wm.received_at >= start
-        assert wm.payload == None
+        assert wm.payload is None

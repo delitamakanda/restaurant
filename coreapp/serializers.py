@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from rest_framework import serializers, response
+from rest_framework import serializers
 
 from coreapp.models import (Category, User, Restaurant, Meal, Order, OrderItem, Menu,
                             Product, Supplement, Address, Schedule, Tags)

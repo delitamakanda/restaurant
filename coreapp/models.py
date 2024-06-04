@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.db.models import Manager, QuerySet, Q
+from django.db.models import Manager, QuerySet
 from django.contrib.auth.models import AbstractUser
 
 
