@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, Group
+
 from coreapp.models import (
     User,
     Category,
@@ -18,17 +19,56 @@ from coreapp.models import (
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('id', 'username', 'email',)
+    list_display: tuple[str, str, str] = (
+        "id",
+        "username",
+        "email",
+    )
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', 'contact_number', 'first_name', 'last_name', 'contact_email')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
+        (
+            None,
+            {
+                "fields": (
+                    "username",
+                    "email",
+                    "password",
+                    "contact_number",
+                    "first_name",
+                    "last_name",
+                    "contact_email",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                )
+            },
+        ),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'email', 'password', 'is_active', 'is_staff', 'is_superuser', 'contact_number',
-                       'first_name', 'last_name', 'contact_email'),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "email",
+                    "password",
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "contact_number",
+                    "first_name",
+                    "last_name",
+                    "contact_email",
+                ),
+            },
+        ),
     )
 
 
@@ -37,7 +77,13 @@ class SupplementInline(admin.StackedInline):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'price', 'supplements',)
+    list_display = (
+        "id",
+        "name",
+        "description",
+        "price",
+        "supplements",
+    )
 
 
 class RestaurantAdmin(admin.ModelAdmin):
