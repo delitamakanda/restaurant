@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool, False),
+    DEBUG=(bool, True),
     SECRET_KEY=(str, ""),
     ALLOWED_HOSTS=(str, "localhost,127.0.0.1"),
     WEBHOOK_TOKEN=(str, ""),
@@ -39,15 +39,8 @@ env = environ.Env(
 
 env_file = os.path.join(BASE_DIR, ".env.example")
 
-if os.path.exists(env_file):
+if os.path.exists(env_file) and env("DEBUG"):
     env.read_env(env_file)
-elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    settings_name = os.environ.get("SETTINGS_NAME", "settings")
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-    payload = client.access_secret_version(name).payload.data.decode("UTF-8")
-    env.read_env(io.StringIO(payload))
 else:
     raise Exception("No.env file found")
 
@@ -76,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.flatpages",
     "django.contrib.humanize",
     "multiselectfield",
+    "storages",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
@@ -121,10 +115,6 @@ default_sqlite_db = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
 DATABASES = {
     "default": env.db("DATABASE_URL", default=default_sqlite_db),
 }
-
-if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
-    DATABASES["default"]["HOST"] = "127.0.0.1"
-    DATABASES["default"]["PORT"] = "5432"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -226,28 +216,3 @@ SPECTACULAR_SETTINGS = {
 
 # webhook settings
 WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN", default="1234567890")
-
-# STORAGES
-
-GS_BUCKET_NAME = env("STORAGE_BUCKET_NAME", default=None)
-# if env('DEBUG'):
-# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-# os.path.join(BASE_DIR, 'credentials.json')
-# )
-
-if not env("DEBUG"):
-    DEFAULT_FILE_STORAGE = "restaurant.storage_backends.GoogleCloudMediaStorage"
-    STATICFILES_STORAGE = "restaurant.storage_backends.GoogleCloudStaticStorage"
-    GS_DEFAULT_ACL = "publicRead"
-    GS_PROJECT_ID = env("GOOGLE_CLOUD_PROJECT", default=None)
-    GS_FILE_OVERWRITE = False
-    GS_MEDIA_BUCKET_NAME = "media"
-    GS_STATIC_BUCKET_NAME = "static"
-    STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
-    MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
-
-if not env("DEBUG"):
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True

@@ -1,16 +1,14 @@
-FROM python:3.11-slim
+FROM python:3.9-slim
 
+ENV APP_HOME /app
+ENV PORT 8080
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y build-essential git
+WORKDIR $APP_HOME
+COPY requirements.txt .
 
-WORKDIR /app
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE $PORT
+COPY . .
 
-# Allows docker to cache installed dependencies between builds
-COPY . /app
-
-RUN pip install -r requirements.txt && python manage.py migrate
-
-CMD python manage.py runserver 0.0.0.0:$PORT
+CMD gunicorn --bind :$PORT --workers 1 --threads 8 --preload restaurant.wsgi:application

@@ -1,0 +1,12 @@
+#!include:.gitignore
+
+.env
+
+.git
+
+.DS_Store
+media/
+
+venv/
+htmlcov/
+.coverage/
