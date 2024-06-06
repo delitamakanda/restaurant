@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import io
 import logging
 import logging.config
 import os
@@ -21,8 +20,6 @@ import environ
 import structlog
 from google.cloud import secretmanager
 from pythonjsonlogger import jsonlogger
-
-# from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -1,5 +1,3 @@
-import os
-from google.cloud import secretmanager
 from restaurant.settings import *
 
 
