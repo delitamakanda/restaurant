@@ -18,7 +18,6 @@ from pathlib import Path
 
 import environ
 import structlog
-from google.cloud import secretmanager
 from pythonjsonlogger import jsonlogger
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

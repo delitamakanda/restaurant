@@ -1,4 +1,5 @@
-from restaurant.settings import os, secretmanager
+import os
+from google.cloud import secretmanager
 
 
 def get_secret(secret_id):
