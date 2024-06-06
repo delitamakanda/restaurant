@@ -24,6 +24,22 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import Sitemap
+from coreapp.models import Restaurant
+
+
+class RestaurantSitemap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.5
+
+    def items(self):
+        return Restaurant.objects.all()
+
+    @staticmethod
+    def lastmod(obj):
+        return obj.created_at
+
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -39,6 +55,12 @@ urlpatterns = [
     ),
     path("", include("coreapp.urls")),
     path("admin/", admin.site.urls),
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": {"restaurants": RestaurantSitemap}},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
 ]
 
 if settings.DEBUG:

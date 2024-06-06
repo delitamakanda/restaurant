@@ -146,6 +146,9 @@ class Restaurant(TimeBasedStampModel):
 
     objects = AppManager()
 
+    def get_absolute_url(self):
+        return f"/restaurants/{self.id}"
+
 
 class Meal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
