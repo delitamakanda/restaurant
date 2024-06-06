@@ -9,6 +9,7 @@ env_variables:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   DB_CONNECTION_NAME: ${{ secrets.DB_CONNECTION_NAME }}
   GS_BUCKET_NAME: ${{ secrets.GS_BUCKET_NAME }}
+  GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
 
 automatic_scaling:
   target_cpu_utilization: 0.65
