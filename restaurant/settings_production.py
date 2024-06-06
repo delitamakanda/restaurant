@@ -1,4 +1,4 @@
-from restaurant.settings import *
+from restaurant.settings import os, secretmanager
 
 
 def get_secret(secret_id):
