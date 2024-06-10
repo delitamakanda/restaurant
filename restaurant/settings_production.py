@@ -1,3 +1,4 @@
+from restaurant.settings import *  # NOQA
 import os
 from google.cloud import secretmanager
 
