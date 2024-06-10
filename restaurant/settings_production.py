@@ -1,10 +1,10 @@
 from restaurant.settings import *  # NOQA
 import os
 from google.cloud import secretmanager
-import google.auth
+from google.auth import compute_engine
 
 
-credentials, project = google.auth.default()
+credentials = compute_engine.Credentials()
 
 
 def get_secret(secret_id):
