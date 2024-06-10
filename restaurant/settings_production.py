@@ -3,7 +3,9 @@ import os
 from google.cloud import secretmanager
 import google.auth
 
+
 credentials, project = google.auth.default()
+
 
 def get_secret(secret_id):
     client = secretmanager.SecretManagerServiceClient()
