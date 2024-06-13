@@ -1,6 +1,7 @@
 name: Restaurant Tests
 
 on:
+  workflow_call:
   push:
     branches:
       - main
