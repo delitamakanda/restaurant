@@ -6,6 +6,7 @@
 ## Introduction
 
 django microservices python 3.9
+[![Restaurant Tests](https://github.com/delitamakanda/restaurant/actions/workflows/restaurant_tests.yml/badge.svg?branch=main&event=push)](https://github.com/delitamakanda/restaurant/actions/workflows/restaurant_tests.yml)
 
 ## Restaurant application
 
