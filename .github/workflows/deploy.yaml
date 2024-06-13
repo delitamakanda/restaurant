@@ -6,6 +6,12 @@ on:
       - main
 
 jobs:
+  call-ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+  call-restaurant_tests:
+    uses: ./.github/workflows/restaurant_tests.yml
+    secrets: inherit
   build:
     runs-on: ubuntu-latest
 
