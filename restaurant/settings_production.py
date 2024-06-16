@@ -1,9 +1,8 @@
 from restaurant.settings import *  # NOQA
 import os
+import json
 from google.cloud import secretmanager
-import google.auth
-
-credentials, project = google.auth.default()
+from google.oauth2 import service_account
 
 
 def get_secret(secret_id):
@@ -12,6 +11,9 @@ def get_secret(secret_id):
     response = client.access_secret_version(name=name)
     return response.payload.data.decode("UTF-8")
 
+
+json_account_info = json.loads(get_secret("GOOGLE_APPLICATION_CREDENTIALS"))
+credentials = service_account.Credentials.from_service_account_info(json_account_info)
 
 DEBUG = get_secret("DEBUG")
 ALLOWED_HOSTS = get_secret("ALLOWED_HOSTS").split(",")
