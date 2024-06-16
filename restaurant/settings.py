@@ -112,6 +112,26 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default=default_sqlite_db),
 }
 
+"""
+"default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": env.db("DATABASE_URL", default=default_sqlite_db),
+        "OPTIONS": {
+            "init_command": (
+                "PRAGMA foreign_keys=ON;"
+                "PRAGMA journal_mode=WAL;"
+                "PRAGMA synchronous=NORMAL;"
+                "PRAGMA cache_size=10000;"
+                "PRAGMA temp_store=MEMORY;"
+                "PRAGMA mmap_size=4096;"
+                "PRAGMA busy_timeout=5000;"
+                "PRAGMA journal_size_limit=4096;"
+            ),
+            "transaction_mode": "immediate",
+        },
+    },
+"""
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
