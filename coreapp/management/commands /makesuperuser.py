@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
             if not User.objects.filter(email=email).exists():
                 self.stdout.write("No superusers found, creating one")
-                u = User.objects.create_superuser(
+                User.objects.create_superuser(
                     username="admin", email=email, password=new_password
                 )
                 self.stdout.write("=======================")

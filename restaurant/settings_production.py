@@ -1,12 +1,11 @@
 from restaurant.settings import *  # NOQA
 import os
-import json
 import dj_database_url
 
-DATABASES["default"] = dj_database_url.config()
-DATABASES["default"]["ENGINE"] = "django.db.backends.postgresql"
-DATABASES["default"]["CONN_MAX_AGE"] = 60
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"] = dj_database_url.config()  # NOQA
+DATABASES["default"]["ENGINE"] = "django.db.backends.postgresql"  # NOQA
+DATABASES["default"]["CONN_MAX_AGE"] = 60  # NOQA
+DATABASES["default"]["ATOMIC_REQUESTS"] = True  # NOQA
 
 DEBUG = os.getenv("DEBUG") == "True"
 
