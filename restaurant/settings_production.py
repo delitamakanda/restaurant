@@ -1,39 +1,42 @@
 from restaurant.settings import *  # NOQA
 import os
 import json
-from google.cloud import secretmanager
-from google.oauth2 import service_account
+import dj_database_url
+
+DATABASES["default"] = dj_database_url.config()
+DATABASES["default"]["ENGINE"] = "django.db.backends.postgresql"
+DATABASES["default"]["CONN_MAX_AGE"] = 60
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+DEBUG = os.getenv("DEBUG") == "True"
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+
+ADMINS = [(os.getenv("ADMIN_NAME"), os.getenv("ADMIN_EMAIL"))]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_REFERRER_POLICY = "strict-origin"
+
+SERVER_EMAIL = os.getenv("SERVER_EMAIL")
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+CSRF_TRUSTED_ORIGINS = [os.getenv("CSRF_TRUSTED_ORIGINS")]
 
 
-def get_secret(secret_id):
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/586642100293/secrets/{secret_id}/versions/latest"
-    response = client.access_secret_version(name=name)
-    return response.payload.data.decode("UTF-8")
-
-
-json_account_info = json.loads(get_secret("GOOGLE_APPLICATION_CREDENTIALS"))
-credentials = service_account.Credentials.from_service_account_info(json_account_info)
-
-DEBUG = get_secret("DEBUG")
-ALLOWED_HOSTS = get_secret("ALLOWED_HOSTS").split(",")
-SECRET_KEY = get_secret("SECRET_KEY")
-
-DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-GS_BUCKET_NAME = get_secret("GS_BUCKET_NAME")
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "HOST": f"/cloudsql/{os.environ['DB_CONNECTION_NAME']}",
-        "USER": get_secret("DB_USER"),
-        "PASSWORD": get_secret("DB_PASSWORD"),
-        "NAME": get_secret("DB_NAME"),
-    }
-}
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.getenv("SENDGRID_SERVER")
+EMAIL_HOST_USER = os.getenv("SENDGRID_USERNAME")
+EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_PASSWORD")
+EMAIL_PORT = os.getenv("SENDGRID_PORT")
+EMAIL_TIMEOUT = 500
+EMAIL_USE_SSL = False
+EMAIL_SUBJECT_PREFIX = "[Restaurant API] "

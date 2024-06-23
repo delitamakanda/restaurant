@@ -35,7 +35,7 @@ env = environ.Env(
 
 env_file = os.path.join(BASE_DIR, ".env.example")
 
-if os.path.exists(env_file) and env("DEBUG"):
+if os.path.exists(env_file):
     env.read_env(env_file)
 else:
     raise Exception("No.env file found")
@@ -47,9 +47,9 @@ else:
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG", False)
+DEBUG = env("DEBUG", cast=bool, default=True)
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", str).split(",")
+ALLOWED_HOSTS = [env("ALLOWED_HOSTS")]
 
 # Application definition
 
@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "multiselectfield",
     "storages",
     "rest_framework",
+    "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "coreapp.apps.CoreappConfig",
@@ -101,6 +102,16 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+"""Cors Headers"""
+CORS_ORIGINS_ALLOW_ALL = False
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "https://restaurant-front-b6vk3tv3rq-od.a.run.app",
 ]
 
 WSGI_APPLICATION = "restaurant.wsgi.application"
@@ -212,6 +223,10 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "PAGE_SIZE": 99,
+    "SEARCH_PARAM": "q",
+    "ORDERING_PARAM": "ordering",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
 }
 
 SIMPLE_JWT = {
@@ -232,3 +247,6 @@ SPECTACULAR_SETTINGS = {
 
 # webhook settings
 WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN", default="1234567890")
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
