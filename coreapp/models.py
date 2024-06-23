@@ -36,7 +36,9 @@ class User(AbstractUser):
 
 
 class Tags(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     restaurant = models.ForeignKey(
         "Restaurant", on_delete=models.CASCADE, related_name="restaurant_tags"
     )
@@ -52,7 +54,9 @@ class Tags(TimeBasedStampModel):
 
 
 class Category(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     position = models.PositiveIntegerField(default=1)
     image_url = models.URLField(blank=True, null=True)
@@ -67,7 +71,9 @@ class Category(models.Model):
 
 
 class Address(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     additional_info = models.CharField(max_length=255, blank=True, null=True)
     country = models.CharField(max_length=255)
     customer = models.ForeignKey(
@@ -105,7 +111,9 @@ ALLOWED_DAYS = (
 
 
 class Schedule(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     day = models.CharField(max_length=3, choices=ALLOWED_DAYS, default="MON")
     is_enabled = models.BooleanField(default=True)
     begin_hour = models.TimeField()
@@ -121,7 +129,9 @@ class Schedule(TimeBasedStampModel):
 
 
 class Restaurant(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     image_url = models.URLField(blank=True, null=True)
     schedule = models.ManyToManyField(Schedule, related_name="restaurants_schedule")
@@ -151,7 +161,9 @@ class Restaurant(TimeBasedStampModel):
 
 
 class Meal(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     order = models.PositiveIntegerField(default=1)
     products = models.ManyToManyField("Product", related_name="meals_products")
@@ -166,7 +178,9 @@ class Meal(models.Model):
 
 
 class Supplement(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -180,7 +194,9 @@ class Supplement(models.Model):
 
 
 class Product(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(blank=True, null=True)
@@ -203,7 +219,9 @@ class Product(TimeBasedStampModel):
 
 
 class Menu(TimeBasedStampModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     name = models.CharField(max_length=100)
     description = models.TextField()
     meals = models.ManyToManyField("Meal", related_name="menus_meals")
@@ -226,7 +244,9 @@ class Order(models.Model):
         (5, "Delivered"),
         (6, "Waiting for consumer"),
     )
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     restaurant = models.ForeignKey(
         Restaurant, on_delete=models.CASCADE, related_name="restaurant"
     )
@@ -257,7 +277,9 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
@@ -274,7 +296,9 @@ class OrderItem(models.Model):
 
 
 class WebhookMessage(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
+    )
     received_at = models.DateTimeField(auto_now_add=True)
     payload = models.JSONField(default=None, blank=True, null=True)
 
