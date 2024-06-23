@@ -36,7 +36,7 @@ class User(AbstractUser):
 
 
 class Tags(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     restaurant = models.ForeignKey(
@@ -54,7 +54,7 @@ class Tags(TimeBasedStampModel):
 
 
 class Category(models.Model):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -71,7 +71,7 @@ class Category(models.Model):
 
 
 class Address(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     additional_info = models.CharField(max_length=255, blank=True, null=True)
@@ -111,7 +111,7 @@ ALLOWED_DAYS = (
 
 
 class Schedule(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     day = models.CharField(max_length=3, choices=ALLOWED_DAYS, default="MON")
@@ -129,7 +129,7 @@ class Schedule(TimeBasedStampModel):
 
 
 class Restaurant(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -161,7 +161,7 @@ class Restaurant(TimeBasedStampModel):
 
 
 class Meal(models.Model):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -178,7 +178,7 @@ class Meal(models.Model):
 
 
 class Supplement(models.Model):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -194,7 +194,7 @@ class Supplement(models.Model):
 
 
 class Product(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -219,7 +219,7 @@ class Product(TimeBasedStampModel):
 
 
 class Menu(TimeBasedStampModel):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     name = models.CharField(max_length=100)
@@ -244,7 +244,7 @@ class Order(models.Model):
         (5, "Delivered"),
         (6, "Waiting for consumer"),
     )
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     restaurant = models.ForeignKey(
@@ -277,7 +277,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -296,7 +296,7 @@ class OrderItem(models.Model):
 
 
 class WebhookMessage(models.Model):
-    id = models.UUIDField(
+    id = models.CharField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=36
     )
     received_at = models.DateTimeField(auto_now_add=True)
