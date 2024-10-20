@@ -3,7 +3,7 @@ attrs==23.1.0
 black==24.4.2
 boto==2.49.0
 cachetools==5.3.3
-certifi==2024.2.2
+certifi==2024.7.4
 charset-normalizer==3.3.2
 click==8.1.7
 Django==4.2.16
