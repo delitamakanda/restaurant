@@ -11,9 +11,12 @@ from .views import (
     list_menus,
     list_users,
     list_tags,
+    api_root,
 )
 
 urlpatterns = [
+    path("", api_root, name="api_root"),
+    # hello world view
     path("hello", hello_world_view, name="hello"),
     # webhook
     path("api/webhook/", webhook, name="webhook"),

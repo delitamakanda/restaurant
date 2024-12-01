@@ -370,3 +370,22 @@ def list_tags(request):
     return JsonResponse(
         response_handler({}, status_code=405, message="Method not allowed")
     )
+
+
+@csrf_exempt
+def api_root(request):
+    return JsonResponse(
+        response_handler(
+            data={
+                "products": "/api/products/",
+                "meals": "/api/meals/",
+                "menus": "/api/menus/",
+                "tags": "/api/tags/",
+                "restaurants": "/api/restaurants/",
+                "users": "/api/users/",
+                "categories": "/api/categories/",
+                "webhook": "/api/webhook/",
+            },
+            status_code=200,
+        )
+    )
