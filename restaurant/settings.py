@@ -66,10 +66,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "multiselectfield",
     "storages",
-    "rest_framework",
     "corsheaders",
-    "rest_framework_simplejwt.token_blacklist",
-    "drf_spectacular",
     "coreapp.apps.CoreappConfig",
 ]
 
@@ -220,33 +217,6 @@ structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
     cache_logger_on_first_use=True,
 )
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "PAGE_SIZE": 99,
-    "SEARCH_PARAM": "q",
-    "ORDERING_PARAM": "ordering",
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-}
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
-    "SIGNING_KEY": os.getenv("SIMPLE_JWT_SIGNING_KEY", default=None) or SECRET_KEY,
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-}
-
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Restaurant API",
-    "DESCRIPTION": "API documentation for Restaurant app",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "COMPONENT_SPLIT_REQUEST": False,
-}
 
 # webhook settings
 WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN", default="1234567890")

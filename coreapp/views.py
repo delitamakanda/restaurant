@@ -4,7 +4,7 @@ import datetime
 from secrets import compare_digest
 from django.conf import settings
 from django.db.transaction import atomic
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -16,66 +16,289 @@ from coreapp.models import (
     WebhookMessage,
     Meal,
     Product,
+    Tags,
 )
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.token_blacklist.models import (
-    OutstandingToken,
-    BlacklistedToken,
-)
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from coreapp.serializers import (
-    RestaurantSerializer,
-    CategorySerializer,
-    MenuSerializer,
-    MealSerializer,
-    ProductSerializer,
-    UserSerializer,
-)
+from coreapp.response import response_handler
+from coreapp.pagination import handle_pagination
 
 
-class TemplateViewSet(ModelViewSet):
-    permission_classes = [
-        AllowAny,
-    ]
-    lookup_field = "id"
-    lookup_url_kwarg = "id"
-    http_method_names = [
-        "get",
-    ]
+@csrf_exempt
+def list_users(request):
+    if request.method == "GET":
+        """
+        List all users.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        page = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 10)
+        search = request.GET.get("search", "")
+
+        users = User.objects.filter(
+            username__icontains=search,
+        ).order_by("id")
+
+        paginator = handle_pagination(page, per_page, users)
+        return JsonResponse(
+            response_handler(
+                data={
+                    "users": [
+                        {
+                            "id": user.id,
+                            "username": user.username,
+                            "email": user.email,
+                            "contact_number": user.contact_number,
+                            "contact_email": user.contact_email,
+                            "date_joined": user.date_joined.isoformat(),
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                            "is_active": user.is_active,
+                            "is_staff": user.is_staff,
+                        }
+                        for user in paginator.object_list
+                    ],
+                    "search": search,
+                }
+            )
+        )
+    else:
+        return JsonResponse(
+            response_handler({}, status_code=405, message="Method not allowed")
+        )
 
 
-class MenuViewSet(TemplateViewSet):
-    queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
+@csrf_exempt
+def list_restaurants(request):
+    if request.method == "GET":
+        """
+        List all restaurants.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        page = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 20)
+        search = request.GET.get("search", "")
+        categories = request.GET.getlist("categories", [])
+
+        restaurants = Restaurant.objects.filter(
+            is_deleted=False,
+            name__icontains=search,
+        ).prefetch_related("menus", "menus__meals__products")
+
+        if categories:
+            restaurants = restaurants.filter(category__id__in=categories)
+
+        paginator = handle_pagination(page, per_page, restaurants)
+
+        return JsonResponse(
+            response_handler(
+                data={
+                    "restaurants": [
+                        restaurant.serialize() for restaurant in paginator.object_list
+                    ],
+                    "total_pages": paginator.paginator.num_pages,
+                    "current_page": paginator.number,
+                    "per_page": paginator.paginator.per_page,
+                }
+            ),
+            status=200,
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )
 
 
-class UserViewSet(TemplateViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+@csrf_exempt
+def list_categories(request):
+    if request.method == "GET":
+        """
+        List all categories.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        categories = Category.objects.order_by("position").values(
+            "id", "name", "position", "image_url"
+        )
+        return JsonResponse(
+            response_handler(
+                data={
+                    "categories": list(categories),
+                }
+            ),
+            status=200,
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )
 
 
-class MealViewSet(TemplateViewSet):
-    queryset = Meal.objects.all()
-    serializer_class = MealSerializer
+@csrf_exempt
+def list_products(request):
+    if request.method == "GET":
+        """
+        List all products.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        page = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 99)
+        search = request.GET.get("search", "")
+
+        products = Product.objects.filter(
+            name__icontains=search,
+            description__icontains=search,
+        ).prefetch_related("supplements")
+
+        paginator = handle_pagination(page, per_page, products)
+
+        return JsonResponse(
+            response_handler(
+                data={
+                    "products": [
+                        product.serialize() for product in paginator.object_list
+                    ],
+                    "total_pages": paginator.paginator.num_pages,
+                    "current_page": paginator.number,
+                    "per_page": paginator.paginator.per_page,
+                    "search": search,
+                },
+            )
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )
 
 
-class ProductViewSet(TemplateViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+@csrf_exempt
+def list_meals(request):
+    if request.method == "GET":
+        """
+        List all meals.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        page = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 99)
+        search = request.GET.get("search", "")
+
+        meals = Meal.objects.filter(
+            name__icontains=search,
+        ).prefetch_related("products")
+
+        paginator = handle_pagination(page, per_page, meals)
+        return JsonResponse(
+            response_handler(
+                data={
+                    "meals": [meal.serialize() for meal in paginator.object_list],
+                    "total_pages": paginator.paginator.num_pages,
+                    "current_page": paginator.number,
+                    "per_page": paginator.paginator.per_page,
+                    "search": search,
+                }
+            )
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )
 
 
-class CategoryViewSet(TemplateViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+@csrf_exempt
+def list_menus(request):
+    if request.method == "GET":
+        """
+        List all menus.
+
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        page = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 99)
+        search = request.GET.get("search", "")
+
+        menus = Menu.objects.filter(
+            name__icontains=search,
+        ).prefetch_related("meals")
+
+        paginator = handle_pagination(page, per_page, menus)
+
+        return JsonResponse(
+            response_handler(
+                data={
+                    "menus": [menu.serialize() for menu in paginator.object_list],
+                    "total_pages": paginator.paginator.num_pages,
+                    "current_page": paginator.number,
+                    "per_page": paginator.paginator.per_page,
+                    "search": search,
+                }
+            )
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )
 
 
-class RestaurantViewSet(TemplateViewSet):
-    queryset = Restaurant.objects.all()
-    serializer_class = RestaurantSerializer
+# class TemplateViewSet(ModelViewSet):
+#     permission_classes = [
+#         AllowAny,
+#     ]
+#     lookup_field = "id"
+#     lookup_url_kwarg = "id"
+#     http_method_names = [
+#         "get",
+#     ]
+#
+#
+# class MenuViewSet(TemplateViewSet):
+#     queryset = Menu.objects.all()
+#     serializer_class = MenuSerializer
+#
+#
+# class UserViewSet(TemplateViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#
+#
+# class MealViewSet(TemplateViewSet):
+#     queryset = Meal.objects.all()
+#     serializer_class = MealSerializer
+#
+#
+# class ProductViewSet(TemplateViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#
+#
+# class CategoryViewSet(TemplateViewSet):
+#     queryset = Category.objects.all()
+#     serializer_class = CategorySerializer
+#
+#
+# class RestaurantViewSet(TemplateViewSet):
+#     queryset = Restaurant.objects.all()
+#     serializer_class = RestaurantSerializer
 
 
 @csrf_exempt
@@ -123,16 +346,27 @@ def hello_world_view(request):
     return HttpResponse("Hello world")
 
 
-class APILogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
+@csrf_exempt
+def list_tags(request):
+    if request.method == "GET":
+        """
+        List all tags.
 
-    def post(self, request, *args, **kwargs):
-        if self.request.data.get("all"):
-            token: OutstandingToken
-            for token in OutstandingToken.objects.filter(user=request.user):
-                _, _ = BlacklistedToken.objects.get_or_create(token=token)
-            return Response({"status": "OK, goodbye, all refresh tokens blacklisted"})
-        refresh_token = self.request.data.get("refresh_token")
-        token = RefreshToken(token=refresh_token)
-        token.blacklist()
-        return Response({"status": 204})
+        Args:
+            request (HttpRequest): Request object.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        tags = Tags.objects.all().values(
+            "id",
+            "name",
+        )
+        print(tags)
+
+        return JsonResponse(
+            response_handler(data=[tag.serialize() for tag in tags], status_code=200)
+        )
+    return JsonResponse(
+        response_handler({}, status_code=405, message="Method not allowed")
+    )

@@ -69,6 +69,12 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.image_url:
+            self.image_url = "https://d1vp8nomjxwyf1.cloudfront.net/wp-content/uploads/sites/365/2021/03/23101228/restaurantAmour-%40Pionphotographie-1.jpg"
+            self.save()
+
 
 class Address(TimeBasedStampModel):
     id = models.UUIDField(

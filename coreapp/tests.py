@@ -4,7 +4,16 @@ from http import HTTPStatus
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
 
-from .models import WebhookMessage
+from coreapp.models import WebhookMessage, Tags
+
+
+class TagsViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def view_list_tags(self):
+        response = self.client.get("/api/tags/")
+        assert response.status_code == HTTPStatus.OK
 
 
 @override_settings(WEBHOOK_TOKEN="1234567890")
