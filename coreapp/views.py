@@ -104,7 +104,40 @@ def list_restaurants(request):
             response_handler(
                 data={
                     "restaurants": [
-                        restaurant.serialize() for restaurant in paginator.object_list
+                        {
+                            "id": restaurant.id,
+                            "name": restaurant.name,
+                            "address": {
+                                "id": restaurant.address.id,
+                                "street_address": restaurant.address.street_address,
+                            },
+                            "image_url": restaurant.image_url,
+                            "schedule": [
+                                {
+                                    "id": schedule.id,
+                                    "day": schedule.day,
+                                    "is_enabled": schedule.is_enabled,
+                                    "start_time": schedule.begin_hour.isoformat(),
+                                    "end_time": schedule.end_hour.isoformat(),
+                                }
+                                for schedule in restaurant.schedule.all()
+                            ],
+                            "categories": [
+                                {
+                                    "id": category.id,
+                                    "name": category.name,
+                                }
+                                for category in restaurant.category.all()
+                            ],
+                            "menus": [
+                                {
+                                    "id": menu.id,
+                                }
+                                for menu in restaurant.menus.all()
+                            ],
+                            "user": restaurant.user.id
+                        }
+                        for restaurant in paginator.object_list
                     ],
                     "total_pages": paginator.paginator.num_pages,
                     "current_page": paginator.number,
@@ -173,7 +206,22 @@ def list_products(request):
             response_handler(
                 data={
                     "products": [
-                        product.serialize() for product in paginator.object_list
+                        {
+                            "id": product.id,
+                            "name": product.name,
+                            "price": product.price,
+                            "image_url": product.image_url,
+                            "description": product.description,
+                            "supplements": [
+                                {
+                                    "id": supplement.id,
+                                    "name": supplement.name,
+                                    "price": supplement.price,
+                                }
+                                for supplement in product.supplements.all()
+                            ],
+                        }
+                        for product in paginator.object_list
                     ],
                     "total_pages": paginator.paginator.num_pages,
                     "current_page": paginator.number,
@@ -211,7 +259,23 @@ def list_meals(request):
         return JsonResponse(
             response_handler(
                 data={
-                    "meals": [meal.serialize() for meal in paginator.object_list],
+                    "meals": [
+                        {
+                            "id": meal.id,
+                            "name": meal.name,
+                            "order": meal.order,
+                            "products": [
+                                {
+                                    "id": product.id,
+                                    "name": product.name,
+                                    "price": product.price,
+                                    "image_url": product.image_url,
+                                }
+                                for product in meal.products.all()
+                            ],
+                        }
+                        for meal in paginator.object_list
+                    ],
                     "total_pages": paginator.paginator.num_pages,
                     "current_page": paginator.number,
                     "per_page": paginator.paginator.per_page,
@@ -249,7 +313,22 @@ def list_menus(request):
         return JsonResponse(
             response_handler(
                 data={
-                    "menus": [menu.serialize() for menu in paginator.object_list],
+                    "menus": [
+                        {
+                            "id": menu.id,
+                            "name": menu.name,
+                            "description": menu.description,
+                            "meals": [
+                                {
+                                    "id": meal.id,
+                                    "name": meal.name,
+                                    "order": meal.order,
+                                }
+                                for meal in menu.meals.all()
+                            ],
+                        }
+                        for menu in paginator.object_list
+                    ],
                     "total_pages": paginator.paginator.num_pages,
                     "current_page": paginator.number,
                     "per_page": paginator.paginator.per_page,
@@ -260,47 +339,6 @@ def list_menus(request):
     return JsonResponse(
         response_handler({}, status_code=405, message="Method not allowed")
     )
-
-
-# class TemplateViewSet(ModelViewSet):
-#     permission_classes = [
-#         AllowAny,
-#     ]
-#     lookup_field = "id"
-#     lookup_url_kwarg = "id"
-#     http_method_names = [
-#         "get",
-#     ]
-#
-#
-# class MenuViewSet(TemplateViewSet):
-#     queryset = Menu.objects.all()
-#     serializer_class = MenuSerializer
-#
-#
-# class UserViewSet(TemplateViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#
-#
-# class MealViewSet(TemplateViewSet):
-#     queryset = Meal.objects.all()
-#     serializer_class = MealSerializer
-#
-#
-# class ProductViewSet(TemplateViewSet):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-#
-#
-# class CategoryViewSet(TemplateViewSet):
-#     queryset = Category.objects.all()
-#     serializer_class = CategorySerializer
-#
-#
-# class RestaurantViewSet(TemplateViewSet):
-#     queryset = Restaurant.objects.all()
-#     serializer_class = RestaurantSerializer
 
 
 @csrf_exempt
