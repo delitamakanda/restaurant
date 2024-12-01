@@ -112,30 +112,42 @@ def list_restaurants(request):
                                 "street_address": restaurant.address.street_address,
                             },
                             "image_url": restaurant.image_url,
-                            "schedule": [
-                                {
-                                    "id": schedule.id,
-                                    "day": schedule.day,
-                                    "is_enabled": schedule.is_enabled,
-                                    "start_time": schedule.begin_hour.isoformat(),
-                                    "end_time": schedule.end_hour.isoformat(),
-                                }
-                                for schedule in restaurant.schedule.all()
-                            ],
-                            "categories": [
-                                {
-                                    "id": category.id,
-                                    "name": category.name,
-                                }
-                                for category in restaurant.category.all()
-                            ],
-                            "menus": [
-                                {
-                                    "id": menu.id,
-                                }
-                                for menu in restaurant.menus.all()
-                            ],
-                            "user": restaurant.user.id
+                            "schedule": (
+                                [
+                                    {
+                                        "id": schedule.id,
+                                        "day": schedule.day,
+                                        "is_enabled": schedule.is_enabled,
+                                        "start_time": schedule.begin_hour.isoformat(),
+                                        "end_time": schedule.end_hour.isoformat(),
+                                    }
+                                    for schedule in restaurant.schedule.all()
+                                ]
+                                if restaurant.schedule is not None
+                                else []
+                            ),
+                            "categories": (
+                                [
+                                    {
+                                        "id": category.id,
+                                        "name": category.name,
+                                    }
+                                    for category in restaurant.category.all()
+                                ]
+                                if restaurant.category.exists()
+                                else []
+                            ),
+                            "menus": (
+                                [
+                                    {
+                                        "id": menu.id,
+                                    }
+                                    for menu in restaurant.menus.all()
+                                ]
+                                if restaurant.menus.exists()
+                                else []
+                            ),
+                            "user": restaurant.user.id,
                         }
                         for restaurant in paginator.object_list
                     ],
@@ -208,18 +220,22 @@ def list_products(request):
                     "products": [
                         {
                             "id": product.id,
-                            "name": product.name,
+                            "name": product.name.encode("utf-8"),
                             "price": product.price,
                             "image_url": product.image_url,
                             "description": product.description,
-                            "supplements": [
-                                {
-                                    "id": supplement.id,
-                                    "name": supplement.name,
-                                    "price": supplement.price,
-                                }
-                                for supplement in product.supplements.all()
-                            ],
+                            "supplements": (
+                                [
+                                    {
+                                        "id": supplement.id,
+                                        "name": supplement.name,
+                                        "price": supplement.price,
+                                    }
+                                    for supplement in product.supplements.all()
+                                ]
+                                if product.supplements is not None
+                                else []
+                            ),
                         }
                         for product in paginator.object_list
                     ],
@@ -264,15 +280,19 @@ def list_meals(request):
                             "id": meal.id,
                             "name": meal.name,
                             "order": meal.order,
-                            "products": [
-                                {
-                                    "id": product.id,
-                                    "name": product.name,
-                                    "price": product.price,
-                                    "image_url": product.image_url,
-                                }
-                                for product in meal.products.all()
-                            ],
+                            "products": (
+                                [
+                                    {
+                                        "id": product.id,
+                                        "name": product.name,
+                                        "price": product.price,
+                                        "image_url": product.image_url,
+                                    }
+                                    for product in meal.products.all()
+                                ]
+                                if meal.products is not None
+                                else []
+                            ),
                         }
                         for meal in paginator.object_list
                     ],
@@ -318,14 +338,18 @@ def list_menus(request):
                             "id": menu.id,
                             "name": menu.name,
                             "description": menu.description,
-                            "meals": [
-                                {
-                                    "id": meal.id,
-                                    "name": meal.name,
-                                    "order": meal.order,
-                                }
-                                for meal in menu.meals.all()
-                            ],
+                            "meals": (
+                                [
+                                    {
+                                        "id": meal.id,
+                                        "name": meal.name,
+                                        "order": meal.order,
+                                    }
+                                    for meal in menu.meals.all()
+                                ]
+                                if menu.meals is not None
+                                else []
+                            ),
                         }
                         for menu in paginator.object_list
                     ],
@@ -402,10 +426,14 @@ def list_tags(request):
             "id",
             "name",
         )
-        print(tags)
 
         return JsonResponse(
-            response_handler(data=[tag.serialize() for tag in tags], status_code=200)
+            response_handler(
+                data={
+                    "tags": list(tags),
+                },
+                status_code=200,
+            )
         )
     return JsonResponse(
         response_handler({}, status_code=405, message="Method not allowed")
