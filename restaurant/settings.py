@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import logging
 import logging.config
 import os
-from datetime import timedelta
 from pathlib import Path
 
 import environ
