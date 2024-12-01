@@ -5,6 +5,8 @@ from secrets import compare_digest
 from django.conf import settings
 from django.db.transaction import atomic
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.urls import reverse
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -389,3 +391,8 @@ def api_root(request):
             status_code=200,
         )
     )
+
+
+@csrf_exempt
+def handler_404(request, exception):
+    return redirect(reverse("api_root"))

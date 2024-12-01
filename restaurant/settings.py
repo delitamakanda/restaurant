@@ -82,7 +82,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "restaurant.middleware.metric_middleware",
+    "coreapp.middleware.MetricMiddleware",
+    "coreapp.middleware.DDosMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 

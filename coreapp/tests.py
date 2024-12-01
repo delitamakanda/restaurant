@@ -4,7 +4,7 @@ from http import HTTPStatus
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
 
-from coreapp.models import WebhookMessage, Tags
+from coreapp.models import WebhookMessage
 
 
 class TagsViewTestCase(TestCase):

@@ -27,9 +27,7 @@ python3 manage.py runserver
 >>>
 ```
 
-## Links
+## API Docs
+Only Get Method endpoint
 
-- [ Python on Google Cloud](https://cloud.google.com/python)
-- [Running Django on the App Engine standard environment](https://cloud.google.com/python/django/appengine)
-- [Running Django on the App Engine flexible environment](https://cloud.google.com/python/django/flexible-environment)
-- [Running Django on the Cloud Run environment ](https://cloud.google.com/python/django/run)
+[API Root](https://restaurantapi.applikuapp.com/)
