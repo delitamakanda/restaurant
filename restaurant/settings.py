@@ -223,3 +223,5 @@ WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN", default="1234567890")
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+APPEND_SLASH = True
