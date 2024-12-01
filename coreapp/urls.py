@@ -12,7 +12,6 @@ from coreapp.views import (
     list_users,
     list_tags,
     api_root,
-    handler_404,
 )
 
 
@@ -34,6 +33,4 @@ urlpatterns = [
     path("api/menus/", list_menus, name="list_menus"),
     path("api/users/", list_users, name="list_users"),
     path("api/tags/", list_tags, name="list_tags"),
-    # catch not found
-    path("api/<path:path>", handler_404, name="handler404"),
 ]
