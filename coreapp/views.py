@@ -220,7 +220,7 @@ def list_products(request):
                     "products": [
                         {
                             "id": product.id,
-                            "name": product.name.encode("utf-8"),
+                            "name": product.name,
                             "price": product.price,
                             "image_url": product.image_url,
                             "description": product.description,
