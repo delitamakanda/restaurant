@@ -168,6 +168,17 @@ class Restaurant(TimeBasedStampModel):
     def get_absolute_url(self):
         return f"/restaurants/{self.id}"
 
+    def restaurant_tags_list(self):
+        tags = Tags.objects.filter(restaurant=self)
+        if tags.exists():
+            tags_list = tags.values_list("name", flat=True)
+            return ", ".join(tags_list)
+        else:
+            return ""
+
+    def restaurant_menus(self):
+        return Menu.objects.filter(restaurant=self)
+
 
 class Meal(models.Model):
     id = models.UUIDField(

@@ -148,6 +148,7 @@ def list_restaurants(request):
                                 else []
                             ),
                             "user": restaurant.user.id,
+                            "tags": restaurant.restaurant_tags_list(),
                         }
                         for restaurant in paginator.object_list
                     ],
@@ -391,7 +392,7 @@ def restaurants_csv(request):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="restaurants.csv"'
     writer = csv.writer(response)
-    writer.writerow(["id", "name", "address", "phone", "email", "category"])
+    writer.writerow(["id", "name", "address", "phone", "email", "category", "tags"])
     for restaurant in restaurants:
         writer.writerow(
             [
@@ -401,6 +402,7 @@ def restaurants_csv(request):
                 restaurant.phone,
                 restaurant.email,
                 restaurant.category.name,
+                restaurant.restaurant_tags_list(),
             ]
         )
     return response
