@@ -194,11 +194,10 @@ def get_restaurant_by_id(request, restaurant_id):
                     },
                 ),
                 status=200,
-                message="Restaurant found",
             )
         except Restaurant.DoesNotExist:
             return JsonResponse(
-                response_handler({}, status_code=404),
+                response_handler({}, status_code=404, message="Restaurant not found"),
             )
     return response_handler({}, status_code=405, message="Method not allowed")
 
