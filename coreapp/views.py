@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db.transaction import atomic
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.urls import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -162,6 +162,44 @@ def list_restaurants(request):
     return JsonResponse(
         response_handler({}, status_code=405, message="Method not allowed")
     )
+
+
+@csrf_exempt
+def get_restaurant_by_id(request, restaurant_id):
+    if request.method == "GET":
+        """
+        Get restaurant by ID.
+        Args:
+            request (HttpRequest): Request object.
+            restaurant_id (int): Restaurant ID.
+
+        Returns:
+            HttpResponse: API response.
+        """
+        try:
+            restaurant = get_object_or_404(
+                Restaurant,
+                id=restaurant_id,
+            )
+            return JsonResponse(
+                response_handler(
+                    data={
+                        "id": restaurant.id,
+                        "name": restaurant.name,
+                        "address": {
+                            "id": restaurant.address.id,
+                            "street_address": restaurant.address.street_address,
+                        },
+                        "image_url": restaurant.image_url,
+                    }
+                ),
+                status=200,
+                message="Restaurant retrieved successfully",
+            )
+        except Restaurant.DoesNotExist:
+            return JsonResponse(
+                response_handler({}, status_code=404, message="Restaurant not found"),
+            )
 
 
 @csrf_exempt

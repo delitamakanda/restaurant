@@ -12,6 +12,7 @@ from coreapp.views import (
     list_users,
     list_tags,
     api_root,
+    get_restaurant_by_id,
 )
 
 
@@ -33,4 +34,9 @@ urlpatterns = [
     path("api/menus/", list_menus, name="list_menus"),
     path("api/users/", list_users, name="list_users"),
     path("api/tags/", list_tags, name="list_tags"),
+    path(
+        "api/restaurants/<int:restaurant_id>/",
+        get_restaurant_by_id,
+        name="get_restaurant_by_id",
+    ),
 ]
