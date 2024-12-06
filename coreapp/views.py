@@ -191,15 +191,16 @@ def get_restaurant_by_id(request, restaurant_id):
                             "street_address": restaurant.address.street_address,
                         },
                         "image_url": restaurant.image_url,
-                    }
+                    },
                 ),
                 status=200,
-                message="Restaurant retrieved successfully",
+                message="Restaurant found",
             )
         except Restaurant.DoesNotExist:
             return JsonResponse(
-                response_handler({}, status_code=404, message="Restaurant not found"),
+                response_handler({}, status_code=404),
             )
+    return response_handler({}, status_code=405, message="Method not allowed")
 
 
 @csrf_exempt
