@@ -35,7 +35,7 @@ urlpatterns = [
     path("api/users/", list_users, name="list_users"),
     path("api/tags/", list_tags, name="list_tags"),
     path(
-        "api/restaurants/<int:restaurant_id>/",
+        "api/restaurant/<str:restaurant_id>/",
         get_restaurant_by_id,
         name="get_restaurant_by_id",
     ),

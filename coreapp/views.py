@@ -171,7 +171,7 @@ def get_restaurant_by_id(request, restaurant_id):
         Get restaurant by ID.
         Args:
             request (HttpRequest): Request object.
-            restaurant_id (int): Restaurant ID.
+            restaurant_id (str): Restaurant ID.
 
         Returns:
             HttpResponse: API response.
