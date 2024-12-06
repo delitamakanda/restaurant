@@ -1,4 +1,4 @@
-# Django application on Google Cloud Platform.
+# Multi tenant restaurant app with Django.
 
 <!-- START doctoc -->
 <!-- END doctoc -->
