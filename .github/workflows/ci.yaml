@@ -10,10 +10,10 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         persist-credentials: false
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v3
     - name: 'install terraform-docs'
       run: >
         curl -L
@@ -23,4 +23,4 @@ jobs:
         && tar -xzf terraform-docs.tgz terraform-docs
         && chmod +x terraform-docs
         && sudo mv terraform-docs /usr/bin/
-    - uses: pre-commit/action@v2.0.3
+    - uses: pre-commit/action@v3.0.1
