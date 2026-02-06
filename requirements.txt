@@ -37,7 +37,7 @@ pillow==10.3.0
 platformdirs==4.2.2
 pluggy==1.2.0
 proto-plus==1.23.0
-protobuf==4.25.8
+protobuf==5.29.6
 psycopg2-binary==2.9.9
 pyasn1==0.6.0
 pyasn1-modules==0.4.0
