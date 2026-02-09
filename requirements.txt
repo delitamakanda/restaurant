@@ -16,12 +16,12 @@ exceptiongroup==1.1.1
 google-api-core==2.29.0
 google-auth==2.29.0
 google-cloud-core==2.4.1
-google-cloud-secret-manager==2.20.0
+google-cloud-secret-manager==2.26.0
 google-cloud-storage==2.16.0
 google-crc32c==1.5.0
 google-resumable-media==2.7.0
 googleapis-common-protos==1.72.0
-grpc-google-iam-v1==0.13.0
+grpc-google-iam-v1==0.14.3
 grpcio==1.64.0
 grpcio-status==1.62.2
 gunicorn==23.0.0
@@ -36,8 +36,8 @@ pathspec==0.12.1
 pillow==10.3.0
 platformdirs==4.2.2
 pluggy==1.2.0
-proto-plus==1.23.0
-protobuf==4.25.8
+proto-plus==1.27.1
+protobuf==5.29.6
 psycopg2-binary==2.9.9
 pyasn1==0.6.0
 pyasn1-modules==0.4.0
