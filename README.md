@@ -32,7 +32,7 @@ Workers. Ses routes sont réimplémentées avec [Hono](https://hono.dev) dans
 | Données | `db.json` (embarqué dans le bundle) |
 | Langage | TypeScript |
 | Tests | Vitest |
-| Déploiement | Wrangler / GitHub Actions |
+| Déploiement | Cloudflare Workers Builds (intégration Git) |
 
 ## Démarrage
 
@@ -141,6 +141,7 @@ npm run deploy
 ```
 
 La CI ([`.github/workflows/ci.yaml`](.github/workflows/ci.yaml)) lance le typecheck, les
-tests et un `wrangler deploy --dry-run` sur chaque PR. Elle déploie automatiquement à chaque
-push sur `main`. Secrets GitHub nécessaires : `CLOUDFLARE_API_TOKEN` et
-`CLOUDFLARE_ACCOUNT_ID`.
+tests et un `wrangler deploy --dry-run` sur chaque PR et chaque push. Elle ne déploie pas :
+le déploiement est assuré par Cloudflare Workers Builds, connecté directement au dépôt GitHub,
+qui déploie automatiquement à chaque push sur `main`. Aucun secret Cloudflare n'est nécessaire
+côté GitHub.
