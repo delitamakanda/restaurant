@@ -3,7 +3,7 @@
 <!-- START doctoc -->
 <!-- END doctoc -->
 
-[![CI](https://github.com/delitamakanda/restaurant/actions/workflows/ci.yaml/badge.svg?branch=main&event=push)](https://github.com/delitamakanda/restaurant/actions/workflows/ci.yaml)
+[![CI](https://github.com/delitamakanda/restaurant/actions/workflows/ci.yaml/badge.svg)](https://github.com/delitamakanda/restaurant/actions/workflows/ci.yaml)
 
 Mock de l'API Restaurant (anciennement une application Django), servi par un
 [Cloudflare Worker](https://developers.cloudflare.com/workers/) à partir d'un
