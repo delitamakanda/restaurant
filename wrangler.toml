@@ -1,0 +1,13 @@
+name = "restaurant-api-mock"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+# "true" désactive POST/PUT/PATCH/DELETE sur les routes json-server (/:resource).
+READ_ONLY = "false"
+# Origines CORS autorisées, séparées par des virgules, ou "*".
+CORS_ORIGINS = "*"
+
+# Secret (ne pas mettre ici) :
+#   npx wrangler secret put WEBHOOK_TOKEN
+# En local, le définir dans .dev.vars
