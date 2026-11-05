@@ -161,3 +161,8 @@ cython_debug/
 .idea/
 .DS_Store
 credentials.json
+
+# Node / Cloudflare Workers
+node_modules/
+.wrangler/
+.dev.vars
